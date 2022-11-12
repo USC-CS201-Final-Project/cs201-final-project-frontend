@@ -11,6 +11,8 @@ public class Player : MonoBehaviour
     int playerID;
     int playerDamage;
     int playerNumWords;
+    public Animator animation;
+    //public Animation animation;
 
     PlayerInfo playerInfo;
     int playerHP;
@@ -27,12 +29,12 @@ public class Player : MonoBehaviour
     State mCurState = State.Idle;
     //UnUsed variable for later use, update when have attack animation
     bool isInAttackAnimation = false;
-
-    string filePath = "E:/unity projects/CSCI201_Final_Project/cs201-final-project-frontend/Assets/csci201/Scripts";
+    
+    string filePath = "D:/cs201-final-project-frontend/Assets/csci201/Scripts";
     void Start()
     {
         playerInfo = PlayerInfo.CreateFromJSON(filePath,"sampleJson.json");
-        
+        //animation = gameObject.GetComponent<Animation>();
         /*intialize enemy Uncomment this after enemy is implemented*/
         //enemy = GameObject.FindGameObjectWithTag("Enemy");
     }
@@ -42,6 +44,7 @@ public class Player : MonoBehaviour
         playerInfo = PlayerInfo.CreateFromJSON(filePath,"sampleJson.json");
         UpdatePlayerHealth(playerInfo.health);
         UpdatePlayerState();
+        UpdatePlayerAnimation();
     }
 
     void UpdatePlayerState(){
@@ -70,7 +73,7 @@ public class Player : MonoBehaviour
     }
 
     void UpdateIdle(){
-        
+        animation.Play("idle");
     }
     void UpdateAttack(){
 
