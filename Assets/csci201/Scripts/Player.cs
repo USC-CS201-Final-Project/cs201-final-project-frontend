@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     int playerHP;
 
     GameObject enemy;
+    Animator animator;
     [SerializeField]HealthComponent healthBar;
 
     enum State{
@@ -32,9 +33,10 @@ public class Player : MonoBehaviour
     void Start()
     {
         playerInfo = PlayerInfo.CreateFromJSON(filePath,"sampleJson.json");
-        
+        animator = gameObject.GetComponent<Animator>();
         /*intialize enemy Uncomment this after enemy is implemented*/
         //enemy = GameObject.FindGameObjectWithTag("Enemy");
+        
     }
 
     void Update()
