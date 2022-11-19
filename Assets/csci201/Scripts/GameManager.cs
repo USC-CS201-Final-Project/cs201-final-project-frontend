@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     int wordCount = -1;
 
     // current word
-    string currword = "";
+    public string currword = "";
 
     // ui elements
     public GameObject g_inp;
