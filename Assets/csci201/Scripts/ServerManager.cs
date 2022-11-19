@@ -4,11 +4,12 @@ using UnityEngine;
 using System.Net;
 using System.IO;
 using System.Net.Sockets;
+using System;
 
 
 public class ServerManager : MonoBehaviour
 {
-
+    [SerializeField] GameObject playerPool;
     public static ServerManager ins;
     private StreamReader sr;
     private StreamWriter sw;
@@ -153,7 +154,12 @@ public class ServerManager : MonoBehaviour
 
     public void PlayerAttack(int playerID, int bossHP, string newWord)
     {
+        //Find the corresponding player that is attacking
+        Player[] players = playerPool.GetComponentsInChildren<Player>();
+        Player attackingPlayer = Array.Find(players, element => element.ComparePlayer(playerID));
 
+        attackingPlayer.SetCurState(Player.State.Attack);
+        attackingPlayer.SetCurWord(newWord);
     }
 
 

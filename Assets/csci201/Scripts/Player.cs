@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -11,17 +12,19 @@ public class Player : MonoBehaviour
     int playerID;
     int playerDamage;
     int playerNumWords;
+    string curWord;
     public Animator animation;
     //public Animation animation;
 
     PlayerInfo playerInfo;
     int playerHP;
 
-    GameObject enemy;
+    Enemy enemy;
     Animator animator;
     [SerializeField]HealthComponent healthBar;
+    string jsonString;
 
-    enum State{
+    public enum State{
         Idle,
         Attack,
         Dead
@@ -30,20 +33,49 @@ public class Player : MonoBehaviour
     State mCurState = State.Idle;
     //UnUsed variable for later use, update when have attack animation
     bool isInAttackAnimation = false;
-    
-    string filePath = "D:/cs201-final-project-frontend/Assets/csci201/Scripts";
+
+    public bool ComparePlayer(int playerID)
+    {
+        return this.GetComponent<PlayerInfo>().playerID == playerID;
+    }
+
+    public void SetCurState(State state)
+    {
+        mCurState = state;
+    }
+
+    public State GetCurState()
+    {
+        return mCurState;
+    }
+
+    public void SetCurWord(string word)
+    {
+        curWord = word;
+    }
+
+    public string GetCurWord()
+    {
+        return curWord;
+    }
+
+    public 
+
+
+
     void Start()
     {
-        playerInfo = PlayerInfo.CreateFromJSON(filePath,"sampleJson.json");
+        jsonString = Resources.Load<TextAsset>("sampleJson").text;
+        playerInfo = PlayerInfo.CreateFromJSON(jsonString);
         //animation = gameObject.GetComponent<Animation>();
         /*intialize enemy Uncomment this after enemy is implemented*/
-        //enemy = GameObject.FindGameObjectWithTag("Enemy");
+        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
         
     }
 
     void Update()
     {
-        playerInfo = PlayerInfo.CreateFromJSON(filePath,"sampleJson.json");
+        playerInfo = PlayerInfo.CreateFromJSON(jsonString);
         UpdatePlayerHealth(playerInfo.health);
         UpdatePlayerState();
         UpdatePlayerAnimation();
@@ -75,9 +107,14 @@ public class Player : MonoBehaviour
     }
 
     void UpdateIdle(){
-        animation.Play("idle");
+        //animation.Play("idle");
     }
     void UpdateAttack(){
+        //play player attack animation (update isInAttackAnimation bool)
+
+        //play Enemy damaged Animation
+        //enemy.GetComponent<Animator>().Play();
+
 
     }
 
@@ -90,6 +127,13 @@ public class Player : MonoBehaviour
         healthBar.SetHealth(curHealth/100);
     }
 
+    void UpdateCostumeSprite()
+    {
+        //Get player costume sprite
+
+        //Update costume sprite
+        //gameObject.GetComponent<Image>() = Resources.Load<Image>(playerInfo.customNames[playerInfo.curCustom]);
+    }
 
 }
 
@@ -102,6 +146,8 @@ public class PlayerInfo{
     public int health;
     [HideInInspector]
     public bool isAttacking;
+    public string[] customNames;
+    public int curCustom;
 
     public static PlayerInfo CreateFromJSON(string fileFolder, string fileName)
     {
