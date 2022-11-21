@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     int enemyDamage;
     public Animator enemyAnimatior;
     GameObject playerPool;
-    State enemyCurState;
+    State enemyCurState = State.Idle;
     int targetPlayerID;
     [SerializeField] HealthComponent healthBar;
     EnemyInfo enemyInfo;

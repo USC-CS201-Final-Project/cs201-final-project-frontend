@@ -113,7 +113,7 @@ public class Player : MonoBehaviour
         //play player attack animation (update isInAttackAnimation bool)
 
         //play Enemy damaged Animation
-        //enemy.GetComponent<Animator>().Play();
+        //enemy.GetComponent<Animator>().Play("animation");
 
 
     }
@@ -146,7 +146,7 @@ public class PlayerInfo{
     public int health;
     [HideInInspector]
     public bool isAttacking;
-    public string[] customNames;
+    public int[] customNames;
     public int curCustom;
 
     public static PlayerInfo CreateFromJSON(string fileFolder, string fileName)
