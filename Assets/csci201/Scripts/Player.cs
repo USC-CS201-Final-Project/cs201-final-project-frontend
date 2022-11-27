@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
     int playerID;
     int playerDamage;
     int playerNumWords;
+    
+    int costumeIndex = 0;
     string curWord;
     public Animator animation;
     //public Animation animation;
@@ -115,24 +117,52 @@ public class Player : MonoBehaviour
         //play Enemy damaged Animation
         //enemy.GetComponent<Animator>().Play("animation");
 
-
+        mCurState=State.Idle;
     }
 
     void UpdateDeath(){
 
     }
 
-    void UpdatePlayerHealth(int curHealth){
+    public void UpdatePlayerHealth(int curHealth){
         playerHP = curHealth;
         healthBar.SetHealth(curHealth/100);
     }
 
-    void UpdateCostumeSprite()
+    public void UpdateCostumeSprite()
     {
+        string hatName = "";
         //Get player costume sprite
+        switch (playerInfo.ownedCustomes[costumeIndex])
+        {
+            case -1:
+                //-1 means no hat
+                hatName = "";
+                break;
+            case 0:
+                hatName = "hat0";
+                break;
+            case 1:
+                hatName = "hat1";
+                break;
+            case 2:
+                hatName = "hat2";
+                break;
+            case 3:
+                hatName = "hat3";
+                break;
+            case 4:
+                hatName = "hat4";
+                break;
+            default:
+                hatName = "";
+                break;
+        }
+
+        Sprite hatSprite = Resources.Load<Sprite>("hats/"+hatName);
 
         //Update costume sprite
-        //gameObject.GetComponent<Image>() = Resources.Load<Image>(playerInfo.customNames[playerInfo.curCustom]);
+        //playerHat.GetComponent<Image>().sprite = hatSprite;
     }
 
 }
@@ -146,8 +176,7 @@ public class PlayerInfo{
     public int health;
     [HideInInspector]
     public bool isAttacking;
-    public int[] customNames;
-    public int curCustom;
+    public int[] ownedCustomes;
 
     public static PlayerInfo CreateFromJSON(string fileFolder, string fileName)
     {

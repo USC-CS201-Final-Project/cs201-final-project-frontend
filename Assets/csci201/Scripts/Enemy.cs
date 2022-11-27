@@ -102,7 +102,7 @@ public class Enemy : MonoBehaviour
         //play enemy death animation (set animation loop time to none)
     }
 
-    void UpdateEnemyHealth(int curHealth)
+    public void UpdateEnemyHealth(int curHealth)
     {
         enemyHealth = curHealth;
         healthBar.SetHealth(curHealth / 100);

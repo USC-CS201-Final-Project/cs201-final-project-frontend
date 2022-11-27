@@ -10,6 +10,7 @@ using System;
 public class ServerManager : MonoBehaviour
 {
     [SerializeField] GameObject playerPool;
+    [SerializeField] GameObject enemy;
     public static ServerManager ins;
     private StreamReader sr;
     private StreamWriter sw;
@@ -130,11 +131,11 @@ public class ServerManager : MonoBehaviour
         ServerGameplay s = JsonUtility.FromJson<ServerGameplay>(sr.ReadLine());
         if(s.packetID==0)
         {
-            BossAttack(s.playerHP);
+            BossAttack(s.playerHP, s.playerID);
         }
         else if(s.packetID==1) 
         {
-            CostumeChange(s.costumeID);
+            CostumeChange(s.costumeID, s.playerID);
         }
         else if(s.packetID==2)
         {
@@ -142,14 +143,18 @@ public class ServerManager : MonoBehaviour
         }
     }
 
-    public void BossAttack(int playerHP)
+    public void BossAttack(int playerHP, int playerID)
     {
-
+        Player[] players = playerPool.GetComponentsInChildren<Player>();
+        Player playerUnderAttack = Array.Find(players, element => element.ComparePlayer(playerID));
+        playerUnderAttack.UpdatePlayerHealth(playerHP);
     }
 
-    public void CostumeChange(int[] CostumeChange)
+    public void CostumeChange(int[] CostumeChange, int playerID)
     {
-
+        Player[] players = playerPool.GetComponentsInChildren<Player>();
+        Player playerCostumChange = Array.Find(players, element => element.ComparePlayer(playerID));
+        playerCostumChange.GetComponent<PlayerInfo>().ownedCustomes = CostumeChange;
     }
 
     public void PlayerAttack(int playerID, int bossHP, string newWord)
@@ -160,6 +165,9 @@ public class ServerManager : MonoBehaviour
 
         attackingPlayer.SetCurState(Player.State.Attack);
         attackingPlayer.SetCurWord(newWord);
+
+        enemy.GetComponent<Enemy>().UpdateEnemyHealth(bossHP);
+
     }
 
 
