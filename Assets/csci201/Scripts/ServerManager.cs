@@ -9,7 +9,7 @@ using System;
 
 public class ServerManager : MonoBehaviour
 {
-    [SerializeField] GameObject playerPool;
+    public GameObject playerPool;
     [SerializeField] GameObject enemy;
     public static ServerManager ins;
     private StreamReader sr;
@@ -19,6 +19,9 @@ public class ServerManager : MonoBehaviour
     private bool isConnected = false;
     private bool inGameplay = false;
     private bool loggedIn = false;
+
+    public string userID;
+    public int clientIndex = 0;
 
     void Awake()
     {
@@ -76,18 +79,21 @@ public class ServerManager : MonoBehaviour
 
     public bool Register(string username, string password)
     {
+        userID = username;
         ClientAuthentication c = new ClientAuthentication(username,password,false,true);
         return Authenticate(c);
     }
 
     public bool LogIn(string username, string password)
     {
+        userID = username;
         ClientAuthentication c = new ClientAuthentication(username,password,false,false);
         return Authenticate(c);
     }
 
     public bool PlayGuest()
     {
+        userID = "Guest";
         ClientAuthentication c = new ClientAuthentication("","",true,false);
         return Authenticate(c);
     }
@@ -110,18 +116,19 @@ public class ServerManager : MonoBehaviour
     public void StartGame()
     {
         ServerGameStart g = JsonUtility.FromJson<ServerGameStart>(sr.ReadLine());
+        SceneManager.EnterGame();
     }
 
     // Client Gameplay functionality
 
-    public void ChangeCostume()
+    public void ChangeCostume(int id)
     {
-        sw.WriteLine(JsonUtility.ToJson(new ClientGameplay(false,0)));
+        sw.WriteLine(JsonUtility.ToJson(new ClientGameplay(false,id)));
     }
 
     public void CompleteWord()
     {
-        sw.WriteLine(JsonUtility.ToJson(new ClientGameplay(true,0)));
+        sw.WriteLine(JsonUtility.ToJson(new ClientGameplay(true,-1)));
     }
 
     // Server Gameplay functionality
@@ -131,11 +138,11 @@ public class ServerManager : MonoBehaviour
         ServerGameplay s = JsonUtility.FromJson<ServerGameplay>(sr.ReadLine());
         if(s.packetID==0)
         {
-            BossAttack(s.playerHP, s.playerID);
+            BossAttack(s.playerHP);
         }
         else if(s.packetID==1) 
         {
-            CostumeChange(s.costumeID, s.playerID);
+            CostumeChange(s.costumeID);
         }
         else if(s.packetID==2)
         {
@@ -143,18 +150,20 @@ public class ServerManager : MonoBehaviour
         }
     }
 
-    public void BossAttack(int playerHP, int playerID)
+    public void BossAttack(int playerHP)
     {
         Player[] players = playerPool.GetComponentsInChildren<Player>();
-        Player playerUnderAttack = Array.Find(players, element => element.ComparePlayer(playerID));
-        playerUnderAttack.UpdatePlayerHealth(playerHP);
+        foreach (Player playerUnderAttack in players)
+            playerUnderAttack.UpdatePlayerHealth(playerHP);
     }
 
-    public void CostumeChange(int[] CostumeChange, int playerID)
+    public void CostumeChange(int[] CostumeChange)
     {
         Player[] players = playerPool.GetComponentsInChildren<Player>();
-        Player playerCostumChange = Array.Find(players, element => element.ComparePlayer(playerID));
-        playerCostumChange.GetComponent<PlayerInfo>().ownedCustomes = CostumeChange;
+        for(int i = 0; i< players.Length; i++){
+            players[i].GetComponent<PlayerInfo>().ownedCustomes = CostumeChange[i];
+            players[i].UpdateCostumeSprite();
+        }
     }
 
     public void PlayerAttack(int playerID, int bossHP, string newWord)
@@ -165,6 +174,7 @@ public class ServerManager : MonoBehaviour
 
         attackingPlayer.SetCurState(Player.State.Attack);
         attackingPlayer.SetCurWord(newWord);
+        GameManager.setWord(newWord);
 
         enemy.GetComponent<Enemy>().UpdateEnemyHealth(bossHP);
 
@@ -177,5 +187,6 @@ public class ServerManager : MonoBehaviour
     {
         inGameplay = false;
         ServerGameOver g = JsonUtility.FromJson<ServerGameOver>(sr.ReadLine());
+        SceneManager.EnterGameOver();
     }
 }

@@ -21,6 +21,8 @@ public class UIManager : MonoBehaviour
     public Button b_register;
     public Button b_guest;
 
+    public Button b_costume;
+
     public Button b_playAgain;
     public Button b_quit;
 
@@ -39,7 +41,7 @@ public class UIManager : MonoBehaviour
         b_guest.onClick.AddListener(guest);
         b_playAgain.onClick.AddListener(playAgain);
         b_quit.onClick.AddListener(quit);
-        
+        b_costume.onClick.AddListener(costume);
     }
 
 
@@ -84,5 +86,11 @@ public class UIManager : MonoBehaviour
     {
         SceneManager.EnterConnect();
         errorText.SetActive(false);
+    }
+
+    void costume()
+    {
+        Player[] players = ServerManager.ins.playerPool.GetComponentsInChildren<Player>();
+        players[ServerManager.ins.clientIndex].NextCostume();
     }
 }

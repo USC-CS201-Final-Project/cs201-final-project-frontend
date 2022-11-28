@@ -12,8 +12,7 @@ public class Player : MonoBehaviour
     int playerID;
     int playerDamage;
     int playerNumWords;
-    
-    int costumeIndex = 0;
+
     string curWord;
     public Animator animation;
     //public Animation animation;
@@ -61,7 +60,6 @@ public class Player : MonoBehaviour
         return curWord;
     }
 
-    public 
 
 
 
@@ -133,7 +131,7 @@ public class Player : MonoBehaviour
     {
         string hatName = "";
         //Get player costume sprite
-        switch (playerInfo.ownedCustomes[costumeIndex])
+        switch (playerInfo.ownedCustomes)
         {
             case -1:
                 //-1 means no hat
@@ -165,6 +163,13 @@ public class Player : MonoBehaviour
         //playerHat.GetComponent<Image>().sprite = hatSprite;
     }
 
+    public void NextCostume()
+    {
+        playerInfo.ownedCustomes = ((playerInfo.ownedCustomes+1) % 5) - 1;
+        UpdateCostumeSprite();
+        ServerManager.ins.ChangeCostume(playerInfo.ownedCustomes);
+    }
+
 }
 
 public class PlayerInfo{
@@ -176,7 +181,7 @@ public class PlayerInfo{
     public int health;
     [HideInInspector]
     public bool isAttacking;
-    public int[] ownedCustomes;
+    public int ownedCustomes;
 
     public static PlayerInfo CreateFromJSON(string fileFolder, string fileName)
     {
