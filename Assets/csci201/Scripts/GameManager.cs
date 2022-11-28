@@ -12,35 +12,39 @@ public class GameManager : MonoBehaviour
     public static GameManager ins;
 
     // words typed
-    int wordCount = -1;
+    int wordCount = 0;
 
     // current word
-    public string currword = "";
+    private string currword = "";
 
     // ui elements
-    public GameObject g_inp;
-    private TMP_Text t_inp;
+    public TMP_Text t_inp;
+    public TMP_Text t_score;
+    public TMP_Text t_target;
+    
 
-    public GameObject g_score;
-    private TMP_Text t_score;
+    private void OnEnable() {
+        currword = "debug";
+        t_score.text = "0";
+        t_target.text = "";
+        t_inp.text = "";
+    }
 
-    public GameObject g_target;
-    private TMP_Text t_target;
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        if(ins == null)
+        if(ins == null){
             ins = this;
+            transform.parent = null;
+            DontDestroyOnLoad(gameObject);
+        }
         else
             Destroy(gameObject);
-        DontDestroyOnLoad(gameObject);
 
         // get text component of the input display
-
-        t_inp = g_inp.GetComponent<TMP_Text>();
-        t_score = g_score.GetComponent<TMP_Text>();
-        t_target = g_target.GetComponent<TMP_Text>();
-        currword = completedWord();
+        currword = "debug";
+        t_score.text = "0";
+        t_target.text = "";
+        t_inp.text = "";
     }
 
     // Update is called once per frame
@@ -57,11 +61,11 @@ public class GameManager : MonoBehaviour
             }
             else if ((c == '\n') || (c == '\r')) // enter/return
             {
-                if(checkWord(t_inp.text)) // if typed correctly
+                if(t_inp.text != "" && checkWord(t_inp.text)) // if typed correctly
                 {
                     t_inp.text = ""; // empty the text box
                     // perform actions on success word typing.
-                    currword = completedWord();
+                    completedWord();
                 }
                 else
                 {
@@ -81,15 +85,20 @@ public class GameManager : MonoBehaviour
         return s.Equals(currword, StringComparison.OrdinalIgnoreCase);
     }
 
-    public string completedWord()
+    public void completedWord()
     {
+        //ServerManager.ins.CompleteWord();
         wordCount++;
         t_score.text = ""+wordCount;        
         // temp word generation handled within gamemanager, replace with call to servermanager
         System.Random random = new Random();
-        List<string> words = new List<string>{"computer","science","coding"};
+        List<string> words = new List<string>{"computer","science","coding","bored","more","words"};
         int index = random.Next(words.Count);
-        t_target.text = words[index];
-        return words[index];
+        setWord(words[index]);
+    }
+
+    public static void setWord(string w) {
+        ins.currword = w;
+        ins.t_target.text = w;
     }
 }
