@@ -1681,6 +1681,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPool: {fileID: 0}
   enemy: {fileID: 0}
+  userID: 
+  clientIndex: 0
 --- !u!4 &675545898
 Transform:
   m_ObjectHideFlags: 0
