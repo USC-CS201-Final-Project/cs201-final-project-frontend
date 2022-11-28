@@ -14,14 +14,13 @@ public class Player : MonoBehaviour
     int playerNumWords;
 
     string curWord;
-    public Animator animation;
-    //public Animation animation;
 
     PlayerInfo playerInfo;
     int playerHP;
 
     Enemy enemy;
     Animator animator;
+    AnimatorStateInfo animatorInfo;
     [SerializeField]HealthComponent healthBar;
     string jsonString;
 
@@ -62,14 +61,15 @@ public class Player : MonoBehaviour
 
 
 
-
     void Start()
     {
         jsonString = Resources.Load<TextAsset>("sampleJson").text;
         playerInfo = PlayerInfo.CreateFromJSON(jsonString);
+        animator = GetComponent<Animator>();
+        animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
         //animation = gameObject.GetComponent<Animation>();
         /*intialize enemy Uncomment this after enemy is implemented*/
-        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
+        //enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
         
     }
 
@@ -108,18 +108,20 @@ public class Player : MonoBehaviour
 
     void UpdateIdle(){
         //animation.Play("idle");
+        animator.Play("playerIdle");
     }
     void UpdateAttack(){
         //play player attack animation (update isInAttackAnimation bool)
-
-        //play Enemy damaged Animation
-        //enemy.GetComponent<Animator>().Play("animation");
-
-        mCurState=State.Idle;
+        animator.Play("playerAttack");
+        
+        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsName("playerAttack"))
+        {
+            mCurState=State.Idle;
+        }
     }
 
     void UpdateDeath(){
-
+        animator.Play("playerDead");
     }
 
     public void UpdatePlayerHealth(int curHealth){
@@ -157,7 +159,7 @@ public class Player : MonoBehaviour
                 break;
         }
 
-        Sprite hatSprite = Resources.Load<Sprite>("hats/"+hatName);
+        Sprite hatSprite = Resources.Load<Sprite>("Hats/"+hatName);
 
         //Update costume sprite
         //playerHat.GetComponent<Image>().sprite = hatSprite;
