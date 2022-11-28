@@ -15,13 +15,13 @@ public class Player : MonoBehaviour
     
     int costumeIndex = 0;
     string curWord;
-    //public Animation animation;
 
     PlayerInfo playerInfo;
     int playerHP;
 
     Enemy enemy;
     Animator animator;
+    AnimatorStateInfo animatorInfo;
     [SerializeField]HealthComponent healthBar;
     string jsonString;
 
@@ -67,7 +67,7 @@ public class Player : MonoBehaviour
         jsonString = Resources.Load<TextAsset>("sampleJson").text;
         playerInfo = PlayerInfo.CreateFromJSON(jsonString);
         animator = GetComponent<Animator>();
-        
+        animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
         //animation = gameObject.GetComponent<Animation>();
         /*intialize enemy Uncomment this after enemy is implemented*/
         //enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
@@ -114,11 +114,11 @@ public class Player : MonoBehaviour
     void UpdateAttack(){
         //play player attack animation (update isInAttackAnimation bool)
         animator.Play("playerAttack");
-        //play Enemy damaged Animation
-
-        //enemy.GetComponent<Animator>().Play("animation");
-
-        mCurState=State.Idle;
+        
+        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsName("playerAttack"))
+        {
+            mCurState=State.Idle;
+        }
     }
 
     void UpdateDeath(){
