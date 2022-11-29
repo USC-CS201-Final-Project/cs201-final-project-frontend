@@ -43,7 +43,6 @@ public class ServerManager : MonoBehaviour
             if(!inGameplay)
             {
                 StartGame();
-                inGameplay = true;
             }
             else
             {
@@ -63,7 +62,7 @@ public class ServerManager : MonoBehaviour
             s = client.GetStream();
             sr = new StreamReader(s);
             sw = new StreamWriter(s);
-            sr.BaseStream.ReadTimeout = 2000;
+            sr.BaseStream.ReadTimeout = 4000;
             Debug.Log("streams created");
             sw.AutoFlush = true;
         }
@@ -119,17 +118,18 @@ public class ServerManager : MonoBehaviour
     public void StartGame()
     {
         ServerGameStart g = JsonUtility.FromJson<ServerGameStart>(sr.ReadLine());
-        playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer(g.usernames,g.startingPlayerHealth,g.startingBossHealth,g.startingWord,g.startingCostumeID);
+        //playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer(g.usernames,g.startingPlayerHealth,g.startingBossHealth,g.startingWord,g.startingCostumeID);
+        playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer();
         SceneManager.EnterGame();
-        for(int i = 0; i < g.usernames.Length; i++)
-        {
-            if(g.usernames[i]==userID)
-            {
-                clientIndex = i;
-                GameManager.setWord(g.startingWord[i]);
-            }
-        }
-        
+        // for(int i = 0; i < g.usernames.Length; i++)
+        // {
+        //     if(g.usernames[i]==userID)
+        //     {
+        //         clientIndex = i;
+        //         GameManager.setWord(g.startingWord[i]);
+        //     }
+        // }
+        inGameplay = true;
     }
 
     // Client Gameplay functionality
@@ -149,10 +149,11 @@ public class ServerManager : MonoBehaviour
     public void HandleGameplay()
     {
         ServerGameplay s = JsonUtility.FromJson<ServerGameplay>(sr.ReadLine());
+        Debug.Log(s.packetID);
         if(s.packetID==0)
         {
             BossAttack(s.playerHP);
-            if(s.playerHP==0) GameOver();
+            if(s.playerHP<=0) GameOver();
         }
         else if(s.packetID==1) 
         {
@@ -166,6 +167,10 @@ public class ServerManager : MonoBehaviour
 
     public void BossAttack(int playerHP)
     {
+        Debug.Log("Performing boss attack");
+        Enemy[] boss = playerPool.GetComponentsInChildren<Enemy>();
+        boss[0].SetCurState(Enemy.State.Attack);
+
         Player[] players = playerPool.GetComponentsInChildren<Player>();
         foreach (Player playerUnderAttack in players)
             playerUnderAttack.UpdatePlayerHealth(playerHP);
@@ -182,6 +187,7 @@ public class ServerManager : MonoBehaviour
 
     public void PlayerAttack(int playerID, int bossHP, string newWord)
     {
+        Debug.Log("Performing player attack");
         //Find the corresponding player that is attacking
         Player[] players = playerPool.GetComponentsInChildren<Player>();
         Player attackingPlayer = players[playerID];
@@ -191,7 +197,8 @@ public class ServerManager : MonoBehaviour
 
         if(clientIndex==playerID) GameManager.setWord(newWord);
 
-        enemy.GetComponent<Enemy>().UpdateEnemyHealth(bossHP);
+        Enemy[] boss = playerPool.GetComponentsInChildren<Enemy>();
+        boss[0].UpdateEnemyHealth(bossHP);
 
     }
 

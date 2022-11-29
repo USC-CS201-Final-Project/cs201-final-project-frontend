@@ -8,7 +8,6 @@ using TMPro;
 
 public class Player : MonoBehaviour
 {
-
     int playerHealth;
     int playerID;
     int playerDamage;
@@ -20,6 +19,8 @@ public class Player : MonoBehaviour
 
     public PlayerInfo playerInfo;
     int playerHP;
+
+    [SerializeField]GameObject playerHat;
 
     Enemy enemy;
     Animator animator;
@@ -72,7 +73,7 @@ public class Player : MonoBehaviour
         animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
         //animation = gameObject.GetComponent<Animation>();
         /*intialize enemy Uncomment this after enemy is implemented*/
-        //enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
+        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
         
     }
 
@@ -121,6 +122,7 @@ public class Player : MonoBehaviour
         {
             mCurState=State.Idle;
         }
+        enemy.enemyAnimatior.Play("Hurt");
     }
 
     void UpdateDeath(){
@@ -129,50 +131,21 @@ public class Player : MonoBehaviour
 
     public void UpdatePlayerHealth(int curHealth){
         playerHP = curHealth;
-        healthBar.SetHealth(curHealth/playerInfo.health);
+        healthBar.SetHealth((float)curHealth/(float)playerInfo.health);
     }
 
     public void UpdateCostumeSprite()
     {
-        string hatName = "";
-        //Get player costume sprite
-        switch (playerInfo.ownedCustomes)
-        {
-            case -1:
-                //-1 means no hat
-                hatName = "";
-                break;
-            case 0:
-                hatName = "hat0";
-                break;
-            case 1:
-                hatName = "hat1";
-                break;
-            case 2:
-                hatName = "hat2";
-                break;
-            case 3:
-                hatName = "hat3";
-                break;
-            case 4:
-                hatName = "hat4";
-                break;
-            default:
-                hatName = "";
-                break;
-        }
-
-        Sprite hatSprite = Resources.Load<Sprite>("Hats/"+hatName);
-
         //Update costume sprite
-        //playerHat.GetComponent<Image>().sprite = hatSprite;
+        playerHat.GetComponent<SpriteRenderer>().sprite = ServerManager.ins.playerPool.GetComponent<PlayerPoolManager>().costumes[playerInfo.ownedCustomes];
     }
 
     public void NextCostume()
     {
-        playerInfo.ownedCustomes = ((playerInfo.ownedCustomes+1) % 5) - 1;
+        playerInfo.ownedCustomes = ((playerInfo.ownedCustomes+1) % 8);
         UpdateCostumeSprite();
         ServerManager.ins.ChangeCostume(playerInfo.ownedCustomes);
+        Debug.Log("Next Costume called");
     }
 
 }

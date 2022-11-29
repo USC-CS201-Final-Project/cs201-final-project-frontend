@@ -3975,6 +3975,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 5480551827444912858, guid: 1749f7b250f0d4600b47effc3b0c7178, type: 3}
   bossPrefab: {fileID: 6969054260376603507, guid: ece7780b8c207462b92d0d6e827959bd, type: 3}
+  costumes:
+  - {fileID: 0}
+  - {fileID: 21300000, guid: 957eb37f93bc9b54a9140b441f20a6ef, type: 3}
+  - {fileID: 21300000, guid: 201640f40751442469e591fb589fc9d7, type: 3}
+  - {fileID: 21300000, guid: 0b2752899bc89fa4aa94162dab2ba9f8, type: 3}
+  - {fileID: 21300000, guid: aaa4859451371e047b667655da770f2c, type: 3}
+  - {fileID: 21300000, guid: 9d2254b96a688af41a064ad5263ff998, type: 3}
+  - {fileID: 21300000, guid: e4eb3a72d7442f54e8b35fce29d9d6e3, type: 3}
+  - {fileID: 21300000, guid: 4282c575a31aa4d4fa298d1ce3f08284, type: 3}
 --- !u!1 &1633385254
 GameObject:
   m_ObjectHideFlags: 0
