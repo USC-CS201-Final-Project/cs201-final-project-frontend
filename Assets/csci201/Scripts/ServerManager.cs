@@ -63,6 +63,7 @@ public class ServerManager : MonoBehaviour
             s = client.GetStream();
             sr = new StreamReader(s);
             sw = new StreamWriter(s);
+            sr.BaseStream.ReadTimeout = 2000;
             Debug.Log("streams created");
             sw.AutoFlush = true;
         }
@@ -71,6 +72,7 @@ public class ServerManager : MonoBehaviour
             Debug.Log(e);
             return false;
         }
+        isConnected = true;
         return true;
     }
 
@@ -103,6 +105,7 @@ public class ServerManager : MonoBehaviour
         sw.WriteLine(JsonUtility.ToJson(c));
         // Receive from Server
         ServerAuthentication sa = JsonUtility.FromJson<ServerAuthentication>(sr.ReadLine());
+        Debug.Log("made it past read line");
         // Handle
         if(sa.isValid){
             loggedIn = true;
@@ -116,7 +119,17 @@ public class ServerManager : MonoBehaviour
     public void StartGame()
     {
         ServerGameStart g = JsonUtility.FromJson<ServerGameStart>(sr.ReadLine());
+        playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer(g.usernames,g.startingPlayerHealth,g.startingBossHealth,g.startingWord,g.startingCostumeID);
         SceneManager.EnterGame();
+        for(int i = 0; i < g.usernames.Length; i++)
+        {
+            if(g.usernames[i]==userID)
+            {
+                clientIndex = i;
+                GameManager.setWord(g.startingWord[i]);
+            }
+        }
+        
     }
 
     // Client Gameplay functionality
@@ -139,6 +152,7 @@ public class ServerManager : MonoBehaviour
         if(s.packetID==0)
         {
             BossAttack(s.playerHP);
+            if(s.playerHP==0) GameOver();
         }
         else if(s.packetID==1) 
         {
@@ -161,7 +175,7 @@ public class ServerManager : MonoBehaviour
     {
         Player[] players = playerPool.GetComponentsInChildren<Player>();
         for(int i = 0; i< players.Length; i++){
-            players[i].GetComponent<PlayerInfo>().ownedCustomes = CostumeChange[i];
+            if(i!=clientIndex) players[i].GetComponent<PlayerInfo>().ownedCustomes = CostumeChange[i];
             players[i].UpdateCostumeSprite();
         }
     }
@@ -170,11 +184,12 @@ public class ServerManager : MonoBehaviour
     {
         //Find the corresponding player that is attacking
         Player[] players = playerPool.GetComponentsInChildren<Player>();
-        Player attackingPlayer = Array.Find(players, element => element.ComparePlayer(playerID));
+        Player attackingPlayer = players[playerID];
 
         attackingPlayer.SetCurState(Player.State.Attack);
         attackingPlayer.SetCurWord(newWord);
-        GameManager.setWord(newWord);
+
+        if(clientIndex==playerID) GameManager.setWord(newWord);
 
         enemy.GetComponent<Enemy>().UpdateEnemyHealth(bossHP);
 
@@ -187,6 +202,20 @@ public class ServerManager : MonoBehaviour
     {
         inGameplay = false;
         ServerGameOver g = JsonUtility.FromJson<ServerGameOver>(sr.ReadLine());
-        SceneManager.EnterGameOver();
+        playerPool.GetComponent<PlayerPoolManager>().DestroyPlayers();
+
+        SceneManager.EnterGameOver(g.wordsPerMinute);
+    }
+
+    public void PlayAgain(bool b)
+    {
+        sw.WriteLine(JsonUtility.ToJson(new ClientPlayAgain(b)));
+        if(!b) Disconnected();
+    }
+
+    public void Disconnected() {
+        isConnected = false;
+        loggedIn = false;
+        s.Close();
     }
 }

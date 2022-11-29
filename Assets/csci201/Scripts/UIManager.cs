@@ -79,11 +79,13 @@ public class UIManager : MonoBehaviour
 
     void playAgain()
     {
+        ServerManager.ins.PlayAgain(true);
         SceneManager.EnterWait();
     }
 
     void quit() 
     {
+        ServerManager.ins.PlayAgain(false);
         SceneManager.EnterConnect();
         errorText.SetActive(false);
     }

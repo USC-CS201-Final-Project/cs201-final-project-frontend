@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.IO;
 using UnityEngine.UIElements;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
@@ -13,9 +14,11 @@ public class Player : MonoBehaviour
     int playerDamage;
     int playerNumWords;
 
+    public TMP_Text t_username;
+
     string curWord;
 
-    PlayerInfo playerInfo;
+    public PlayerInfo playerInfo;
     int playerHP;
 
     Enemy enemy;
@@ -63,8 +66,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        jsonString = Resources.Load<TextAsset>("sampleJson").text;
-        playerInfo = PlayerInfo.CreateFromJSON(jsonString);
+        // jsonString = Resources.Load<TextAsset>("sampleJson").text;
+        playerInfo = new PlayerInfo("",0,60,false,-1);
         animator = GetComponent<Animator>();
         animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
         //animation = gameObject.GetComponent<Animation>();
@@ -75,8 +78,8 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        playerInfo = PlayerInfo.CreateFromJSON(jsonString);
-        UpdatePlayerHealth(playerInfo.health);
+        // playerInfo = PlayerInfo.CreateFromJSON(jsonString);
+        // UpdatePlayerHealth(playerInfo.health);
         UpdatePlayerState();
         UpdatePlayerAnimation();
     }
@@ -126,7 +129,7 @@ public class Player : MonoBehaviour
 
     public void UpdatePlayerHealth(int curHealth){
         playerHP = curHealth;
-        healthBar.SetHealth(curHealth/100);
+        healthBar.SetHealth(curHealth/playerInfo.health);
     }
 
     public void UpdateCostumeSprite()
@@ -203,6 +206,15 @@ public class PlayerInfo{
 
     public static PlayerInfo CreateFromJSON(string jsonString){
         return JsonUtility.FromJson<PlayerInfo>(jsonString);
+    }
+
+    public PlayerInfo (string n, int id, int hp, bool attack, int costume)
+    {
+        name = n;
+        playerID = id;
+        health = hp;
+        isAttacking = attack;
+        ownedCustomes = costume;
     }
 
 }

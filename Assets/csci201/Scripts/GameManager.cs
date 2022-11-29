@@ -87,14 +87,14 @@ public class GameManager : MonoBehaviour
 
     public void completedWord()
     {
-        //ServerManager.ins.CompleteWord();
+        ServerManager.ins.CompleteWord();
         wordCount++;
         t_score.text = ""+wordCount;        
         // temp word generation handled within gamemanager, replace with call to servermanager
-        System.Random random = new Random();
-        List<string> words = new List<string>{"computer","science","coding","bored","more","words"};
-        int index = random.Next(words.Count);
-        setWord(words[index]);
+        // System.Random random = new Random();
+        // List<string> words = new List<string>{"computer","science","coding","bored","more","words"};
+        // int index = random.Next(words.Count);
+        // setWord(words[index]);
     }
 
     public static void setWord(string w) {

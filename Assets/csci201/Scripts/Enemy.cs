@@ -13,14 +13,10 @@ public class Enemy : MonoBehaviour
     State enemyCurState = State.Idle;
     int targetPlayerID;
     [SerializeField] HealthComponent healthBar;
-    EnemyInfo enemyInfo;
+    public EnemyInfo enemyInfo;
     bool isInAttackAnimation = false;
 
     //call this function to update the enemy's target (should be passed in json package)
-    public void SetTargetPlayerID(int playerID)
-    {
-        targetPlayerID = playerID;
-    }
 
     enum State
     {
@@ -32,12 +28,13 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         gameObject.tag = "Enemy";
+        enemyInfo = new EnemyInfo(100,false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateEnemyHealth(enemyInfo.health);
+        //UpdateEnemyHealth(enemyInfo.health);
         UpdateEnemyState();
         UpdateEnemyAnimation();
     }
@@ -65,7 +62,7 @@ public class Enemy : MonoBehaviour
         switch (enemyCurState)
         {
             case State.Attack:
-                UpdateAttack(targetPlayerID);
+                UpdateAttack();
                 break;
             case State.Idle:
                 UpdateIdle();
@@ -76,13 +73,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void UpdateAttack(int playerID)
+    void UpdateAttack()
     {
         
         //play enemy attack animation
 
         Player[] players = playerPool.GetComponentsInChildren<Player>();
-        Player attackedPlayer = Array.Find(players, element => element.ComparePlayer(playerID));
+        Player attackedPlayer = players[0];
         Animator playerAnimator = attackedPlayer.GetComponent<Animator>();
         //playerAnimator play damaged animation
 
@@ -105,7 +102,7 @@ public class Enemy : MonoBehaviour
     public void UpdateEnemyHealth(int curHealth)
     {
         enemyHealth = curHealth;
-        healthBar.SetHealth(curHealth / 100);
+        healthBar.SetHealth(curHealth / enemyInfo.health);
     }
 }
 
@@ -139,5 +136,9 @@ public class EnemyInfo
     {
         return JsonUtility.FromJson<EnemyInfo>(jsonString);
     }
-
+    public EnemyInfo(int hp,bool i)
+    {
+        health = hp;
+        isAttacking = i;
+    }
 }
