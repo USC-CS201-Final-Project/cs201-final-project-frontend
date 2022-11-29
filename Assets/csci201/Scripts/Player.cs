@@ -117,12 +117,14 @@ public class Player : MonoBehaviour
     void UpdateAttack(){
         //play player attack animation (update isInAttackAnimation bool)
         animator.Play("playerAttack");
-        
-        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsName("playerAttack"))
+        animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsName("Base.playerAttack"))
         {
             mCurState=State.Idle;
+            playerInfo.isAttacking = false;
+            enemy.takingDamage=true;
         }
-        enemy.enemyAnimatior.Play("Hurt");
+        
     }
 
     void UpdateDeath(){

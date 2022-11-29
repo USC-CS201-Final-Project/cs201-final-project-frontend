@@ -14,6 +14,8 @@ public class AnimationTesting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown("space")) boss.SetCurState(Enemy.State.Attack);
+        if(Input.GetKeyDown("space")) boss.enemyInfo.isAttacking=true;
+        if(Input.GetKeyDown("a")) boss.takingDamage=true;
+        if(Input.GetKeyDown("b")) boss.UpdateEnemyHealth(0);
     }
 }

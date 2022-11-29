@@ -169,7 +169,7 @@ public class ServerManager : MonoBehaviour
     {
         Debug.Log("Performing boss attack");
         Enemy[] boss = playerPool.GetComponentsInChildren<Enemy>();
-        boss[0].SetCurState(Enemy.State.Attack);
+        boss[0].enemyInfo.isAttacking=true;
 
         Player[] players = playerPool.GetComponentsInChildren<Player>();
         foreach (Player playerUnderAttack in players)
@@ -192,7 +192,7 @@ public class ServerManager : MonoBehaviour
         Player[] players = playerPool.GetComponentsInChildren<Player>();
         Player attackingPlayer = players[playerID];
 
-        attackingPlayer.SetCurState(Player.State.Attack);
+        attackingPlayer.playerInfo.isAttacking = true;
         attackingPlayer.SetCurWord(newWord);
 
         if(clientIndex==playerID) GameManager.setWord(newWord);
