@@ -29,7 +29,7 @@ public class PlayerPoolManager : MonoBehaviour
         }
 
 
-        GameObject boss = Instantiate(bossPrefab, new Vector3(3f,0f,0f),Quaternion.identity);
+        GameObject boss = Instantiate(bossPrefab, new Vector3(5f,0f,0f),Quaternion.identity);
         boss.transform.SetParent(gameObject.transform);
         boss.GetComponent<Enemy>().enemyInfo = new EnemyInfo(startingBossHealth,false);
         boss.GetComponent<Enemy>().UpdateEnemyHealth(startingBossHealth);
@@ -37,7 +37,7 @@ public class PlayerPoolManager : MonoBehaviour
 
     public void InstantiatePlayer()
     {
-        GameObject boss = Instantiate(bossPrefab, new Vector3(3f,0f,0f),Quaternion.identity);
+        GameObject boss = Instantiate(bossPrefab, new Vector3(5f,0f,0f),Quaternion.identity);
         boss.transform.SetParent(gameObject.transform);
         boss.GetComponent<Enemy>().enemyInfo = new EnemyInfo(100,false);
         boss.GetComponent<Enemy>().UpdateEnemyHealth(100);

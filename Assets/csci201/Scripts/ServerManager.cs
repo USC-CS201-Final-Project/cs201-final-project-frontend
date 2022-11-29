@@ -162,6 +162,7 @@ public class ServerManager : MonoBehaviour
         else if(s.packetID==2)
         {
             PlayerAttack(s.playerID,s.bossHP,s.newWord);
+            if(s.bossHP<=0) GameOver();
         }
     }
 

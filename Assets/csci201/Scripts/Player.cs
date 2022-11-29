@@ -118,7 +118,7 @@ public class Player : MonoBehaviour
         //play player attack animation (update isInAttackAnimation bool)
         animator.Play("playerAttack");
         animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
-        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsName("Base.playerAttack"))
+        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsTag("Attack"))
         {
             mCurState=State.Idle;
             playerInfo.isAttacking = false;
@@ -129,6 +129,11 @@ public class Player : MonoBehaviour
 
     void UpdateDeath(){
         animator.Play("playerDead");
+        animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsTag("Death"))
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     public void UpdatePlayerHealth(int curHealth){
