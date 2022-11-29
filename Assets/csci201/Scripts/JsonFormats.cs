@@ -88,7 +88,6 @@ public class ClientGameplay
 public class ServerGameOver
 {
     public int wordsPerMinute;
-
     public ServerGameOver(int wpm)
     {
         wordsPerMinute = wpm;
@@ -99,9 +98,10 @@ public class ServerGameOver
 public class ClientPlayAgain
 {
     public bool playAgain;
-
-    public ClientPlayAgain(bool p)
+    public int packetID;
+    public ClientPlayAgain(bool p,int PID=4)
     {
         playAgain = p;
+        packetID = PID;
     }
 }

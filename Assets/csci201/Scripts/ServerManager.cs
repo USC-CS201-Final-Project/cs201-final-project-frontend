@@ -118,17 +118,17 @@ public class ServerManager : MonoBehaviour
     public void StartGame()
     {
         ServerGameStart g = JsonUtility.FromJson<ServerGameStart>(sr.ReadLine());
-        //playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer(g.usernames,g.startingPlayerHealth,g.startingBossHealth,g.startingWord,g.startingCostumeID);
-        playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer();
+        playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer(g.usernames,g.startingPlayerHealth,g.startingBossHealth,g.startingWord,g.startingCostumeID);
+        //playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer();
         SceneManager.EnterGame();
-        // for(int i = 0; i < g.usernames.Length; i++)
-        // {
-        //     if(g.usernames[i]==userID)
-        //     {
-        //         clientIndex = i;
-        //         GameManager.setWord(g.startingWord[i]);
-        //     }
-        // }
+        for(int i = 0; i < g.usernames.Length; i++)
+        {
+            if(g.usernames[i]==userID)
+            {
+                clientIndex = i;
+                GameManager.setWord(g.startingWord[i]);
+            }
+        }
         inGameplay = true;
     }
 
@@ -150,16 +150,16 @@ public class ServerManager : MonoBehaviour
     {
         ServerGameplay s = JsonUtility.FromJson<ServerGameplay>(sr.ReadLine());
         Debug.Log(s.packetID);
-        if(s.packetID==0)
+        if(s.packetID==1)
         {
             BossAttack(s.playerHP);
             if(s.playerHP<=0) GameOver();
         }
-        else if(s.packetID==1) 
+        else if(s.packetID==2) 
         {
             CostumeChange(s.costumeID);
         }
-        else if(s.packetID==2)
+        else if(s.packetID==3)
         {
             PlayerAttack(s.playerID,s.bossHP,s.newWord);
             if(s.bossHP<=0) GameOver();
