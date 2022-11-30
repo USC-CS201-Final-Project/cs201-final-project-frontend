@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!ServerManager.ins.inGameplay) return;
         foreach(char c in Input.inputString)
         {
             if(c == '\b') // backspace

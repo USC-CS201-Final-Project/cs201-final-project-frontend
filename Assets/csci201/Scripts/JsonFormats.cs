@@ -76,11 +76,13 @@ public class ClientGameplay
 {
     public bool completedWord;
     public int costumeID;
-
+    public int packetID;
     public ClientGameplay(bool c, int cid)
     {
         completedWord = c;
         costumeID = cid;
+        if(c) packetID = 6;
+        else packetID = 5;
     }
 }
 

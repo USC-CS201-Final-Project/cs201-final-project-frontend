@@ -16,6 +16,7 @@ public class SceneManager : MonoBehaviour
     public GameObject gameManager;
 
     public TMP_Text t_WPM;
+    public TMP_Text t_gameOver;
 
 
     // Start is called before the first frame update
@@ -43,8 +44,10 @@ public class SceneManager : MonoBehaviour
         ins.login.SetActive(true);
     }
 
-    public static void EnterGameOver(int wpm)
+    public static void EnterGameOver(int wpm, bool b)
     {
+        if(b) ins.t_gameOver.text = "You defeated the slime!";
+        else ins.t_gameOver.text = "The slime defeated you!";
         ins.t_WPM.text = "WPM: "+wpm;
         ins.game.SetActive(false);
         ins.gameManager.SetActive(false);

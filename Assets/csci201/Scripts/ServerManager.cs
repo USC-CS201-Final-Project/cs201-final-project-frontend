@@ -17,7 +17,7 @@ public class ServerManager : MonoBehaviour
     private NetworkStream s;
 
     private bool isConnected = false;
-    private bool inGameplay = false;
+    public bool inGameplay = false;
     private bool loggedIn = false;
 
     public string userID;
@@ -153,7 +153,7 @@ public class ServerManager : MonoBehaviour
         if(s.packetID==1)
         {
             BossAttack(s.playerHP);
-            if(s.playerHP<=0) GameOver();
+            if(s.playerHP<=0) GameOver(false);
         }
         else if(s.packetID==2) 
         {
@@ -162,7 +162,7 @@ public class ServerManager : MonoBehaviour
         else if(s.packetID==3)
         {
             PlayerAttack(s.playerID,s.bossHP,s.newWord);
-            if(s.bossHP<=0) GameOver();
+            if(s.bossHP<=0) GameOver(true);
         }
     }
 
@@ -206,13 +206,18 @@ public class ServerManager : MonoBehaviour
 
     // Game over functionality
 
-    public void GameOver()
+    public void GameOver(bool b)
     {
-        inGameplay = false;
         ServerGameOver g = JsonUtility.FromJson<ServerGameOver>(sr.ReadLine());
-        playerPool.GetComponent<PlayerPoolManager>().DestroyPlayers();
+        inGameplay = false;
+        StartCoroutine(GameOverSequence(g.wordsPerMinute,b));
+    }
 
-        SceneManager.EnterGameOver(g.wordsPerMinute);
+    IEnumerator GameOverSequence(int WPM, bool isWin)
+    {
+        yield return new WaitForSeconds(1f);
+        playerPool.GetComponent<PlayerPoolManager>().DestroyPlayers();
+        SceneManager.EnterGameOver(WPM, isWin);
     }
 
     public void PlayAgain(bool b)

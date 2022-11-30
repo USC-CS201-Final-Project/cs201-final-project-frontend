@@ -92,6 +92,7 @@ public class UIManager : MonoBehaviour
 
     void costume()
     {
+        if(!ServerManager.ins.inGameplay) return;
         Player[] players = ServerManager.ins.playerPool.GetComponentsInChildren<Player>();
         players[ServerManager.ins.clientIndex].NextCostume();
     }
