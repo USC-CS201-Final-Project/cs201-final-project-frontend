@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
     string curWord;
 
     public PlayerInfo playerInfo;
-    int playerHP;
+    public int playerHP;
 
     [SerializeField]GameObject playerHat;
 

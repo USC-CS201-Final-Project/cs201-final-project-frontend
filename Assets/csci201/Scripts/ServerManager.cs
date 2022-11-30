@@ -57,8 +57,10 @@ public class ServerManager : MonoBehaviour
     public bool Connect(string ip = "localhost")
     {
         try{
-            TcpClient client = new TcpClient(ip, 8080);
             Debug.Log("connected to " +ip);
+            TcpClient client = new TcpClient();
+            client.Connect(ip,8080);
+            
             s = client.GetStream();
             sr = new StreamReader(s);
             sw = new StreamWriter(s);
@@ -137,32 +139,41 @@ public class ServerManager : MonoBehaviour
     public void ChangeCostume(int id)
     {
         sw.WriteLine(JsonUtility.ToJson(new ClientGameplay(false,id)));
+        Debug.Log("Sending Costume Change");
     }
 
     public void CompleteWord()
     {
         sw.WriteLine(JsonUtility.ToJson(new ClientGameplay(true,-1)));
+        Debug.Log("Sending attack to server");
     }
 
     // Server Gameplay functionality
 
     public void HandleGameplay()
     {
-        ServerGameplay s = JsonUtility.FromJson<ServerGameplay>(sr.ReadLine());
-        Debug.Log(s.packetID);
-        if(s.packetID==1)
+        string s = sr.ReadLine();
+        ServerGameplay st = JsonUtility.FromJson<ServerGameplay>(s);
+        Debug.Log(st.packetID);
+        if(st.packetID==1)
         {
-            BossAttack(s.playerHP);
-            if(s.playerHP<=0) GameOver(false);
+            Debug.Log(st.playerHP);
+            BossAttack(st.playerHP);
         }
-        else if(s.packetID==2) 
+        else if(st.packetID==2) 
         {
-            CostumeChange(s.costumeID);
+            CostumeChange(st.costumeID);
+            Debug.Log("costume change from server");
         }
-        else if(s.packetID==3)
+        else if(st.packetID==3)
         {
-            PlayerAttack(s.playerID,s.bossHP,s.newWord);
-            if(s.bossHP<=0) GameOver(true);
+            PlayerAttack(st.playerID,st.bossHP,st.newWord);
+        }
+        else if(st.packetID==0)
+        {
+            Player[] players = playerPool.GetComponentsInChildren<Player>();
+            bool isWin = (players[0].playerHP > 0);
+            GameOver(isWin,s);
         }
     }
 
@@ -181,7 +192,7 @@ public class ServerManager : MonoBehaviour
     {
         Player[] players = playerPool.GetComponentsInChildren<Player>();
         for(int i = 0; i< players.Length; i++){
-            if(i!=clientIndex) players[i].GetComponent<PlayerInfo>().ownedCustomes = CostumeChange[i];
+            if(i!=clientIndex) players[i].playerInfo.ownedCustomes = CostumeChange[i];
             players[i].UpdateCostumeSprite();
         }
     }
@@ -206,16 +217,16 @@ public class ServerManager : MonoBehaviour
 
     // Game over functionality
 
-    public void GameOver(bool b)
+    public void GameOver(bool b,string s)
     {
-        ServerGameOver g = JsonUtility.FromJson<ServerGameOver>(sr.ReadLine());
+        ServerGameOver g = JsonUtility.FromJson<ServerGameOver>(s);
         inGameplay = false;
         StartCoroutine(GameOverSequence(g.wordsPerMinute,b));
     }
 
     IEnumerator GameOverSequence(int WPM, bool isWin)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.5f);
         playerPool.GetComponent<PlayerPoolManager>().DestroyPlayers();
         SceneManager.EnterGameOver(WPM, isWin);
     }

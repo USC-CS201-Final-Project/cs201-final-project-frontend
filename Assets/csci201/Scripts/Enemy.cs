@@ -100,7 +100,6 @@ public class Enemy : MonoBehaviour
         {
             enemyCurState = State.Idle;
             enemyInfo.isAttacking = false;
-            Debug.Log("test");
         }
 
     }
@@ -131,7 +130,6 @@ public class Enemy : MonoBehaviour
         {
             enemyCurState = State.Idle;
             takingDamage= false;
-            Debug.Log("test");
         }
     }
 

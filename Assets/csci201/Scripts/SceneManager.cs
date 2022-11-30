@@ -57,6 +57,7 @@ public class SceneManager : MonoBehaviour
     public static void EnterWait()
     {
         ins.login.SetActive(false);
+        ins.gameOver.SetActive(false);
         ins.wait.SetActive(true);
     }
 
