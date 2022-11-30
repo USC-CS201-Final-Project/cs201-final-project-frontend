@@ -128,7 +128,7 @@ public class Player : MonoBehaviour
     }
 
     void UpdateDeath(){
-        animator.Play("playerDead");
+        animator.Play("playerDeath");
         animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
         if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsTag("Death"))
         {

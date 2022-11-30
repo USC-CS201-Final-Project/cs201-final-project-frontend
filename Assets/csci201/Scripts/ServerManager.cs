@@ -36,7 +36,7 @@ public class ServerManager : MonoBehaviour
     }
 
     // Check if there is any data to be read from the server.
-    void FixedUpdate()
+    void Update()
     {
         if (isConnected && loggedIn && s.DataAvailable)
         {
@@ -154,7 +154,7 @@ public class ServerManager : MonoBehaviour
     {
         string s = sr.ReadLine();
         ServerGameplay st = JsonUtility.FromJson<ServerGameplay>(s);
-        Debug.Log(st.packetID);
+        Debug.Log(s);
         if(st.packetID==1)
         {
             Debug.Log(st.playerHP);
@@ -169,11 +169,15 @@ public class ServerManager : MonoBehaviour
         {
             PlayerAttack(st.playerID,st.bossHP,st.newWord);
         }
-        else if(st.packetID==0)
+        if(st.packetID==0)
         {
             Player[] players = playerPool.GetComponentsInChildren<Player>();
             bool isWin = (players[0].playerHP > 0);
             GameOver(isWin,s);
+        }
+        else
+        {
+            sw.WriteLine(JsonUtility.ToJson(new ClientGameplay(false,-2)));
         }
     }
 
@@ -220,7 +224,7 @@ public class ServerManager : MonoBehaviour
     public void GameOver(bool b,string s)
     {
         ServerGameOver g = JsonUtility.FromJson<ServerGameOver>(s);
-        inGameplay = false;
+        //inGameplay = false;
         StartCoroutine(GameOverSequence(g.wordsPerMinute,b));
     }
 
@@ -240,6 +244,7 @@ public class ServerManager : MonoBehaviour
     public void Disconnected() {
         isConnected = false;
         loggedIn = false;
+        inGameplay = false;
         s.Close();
     }
 }
