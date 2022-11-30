@@ -119,7 +119,10 @@ public class ServerManager : MonoBehaviour
 
     public void StartGame()
     {
-        ServerGameStart g = JsonUtility.FromJson<ServerGameStart>(sr.ReadLine());
+        string s = sr.ReadLine();
+        Debug.Log(s);
+        ServerGameStart g = JsonUtility.FromJson<ServerGameStart>(s);
+        if(g.usernames==null) return;
         playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer(g.usernames,g.startingPlayerHealth,g.startingBossHealth,g.startingWord,g.startingCostumeID);
         //playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer();
         SceneManager.EnterGame();
@@ -185,7 +188,7 @@ public class ServerManager : MonoBehaviour
     {
         Debug.Log("Performing boss attack");
         Enemy[] boss = playerPool.GetComponentsInChildren<Enemy>();
-        boss[0].enemyInfo.isAttacking=true;
+        if(boss.Length > 0) boss[0].enemyInfo.isAttacking=true;
 
         Player[] players = playerPool.GetComponentsInChildren<Player>();
         foreach (Player playerUnderAttack in players)
@@ -214,7 +217,7 @@ public class ServerManager : MonoBehaviour
         if(clientIndex==playerID) GameManager.setWord(newWord);
 
         Enemy[] boss = playerPool.GetComponentsInChildren<Enemy>();
-        boss[0].UpdateEnemyHealth(bossHP);
+        if(boss.Length > 0) boss[0].UpdateEnemyHealth(bossHP);
 
     }
 
@@ -224,13 +227,13 @@ public class ServerManager : MonoBehaviour
     public void GameOver(bool b,string s)
     {
         ServerGameOver g = JsonUtility.FromJson<ServerGameOver>(s);
-        //inGameplay = false;
+        inGameplay = false;
         StartCoroutine(GameOverSequence(g.wordsPerMinute,b));
     }
 
     IEnumerator GameOverSequence(int WPM, bool isWin)
     {
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.1f);
         playerPool.GetComponent<PlayerPoolManager>().DestroyPlayers();
         SceneManager.EnterGameOver(WPM, isWin);
     }

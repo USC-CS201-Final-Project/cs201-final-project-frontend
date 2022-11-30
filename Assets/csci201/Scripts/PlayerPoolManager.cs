@@ -56,11 +56,12 @@ public class PlayerPoolManager : MonoBehaviour
 
     public void DestroyPlayers()
     {
-        Transform[] players = GetComponentsInChildren<Transform>();
-        foreach (var player in players)
-        {
+        Player[] players = GetComponentsInChildren<Player>();
+        foreach (Player player in players)
             Destroy(player.gameObject);
-        }
+        Enemy[] enemies = GetComponentsInChildren<Enemy>();
+        foreach (Enemy player in enemies)
+            Destroy(player.gameObject);
     }
 
     // Update is called once per frame
