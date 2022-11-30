@@ -19,6 +19,7 @@ public class ServerManager : MonoBehaviour
     private bool isConnected = false;
     public bool inGameplay = false;
     private bool loggedIn = false;
+    private bool isGuest = false;
 
     public string userID;
     public int clientIndex = 0;
@@ -36,7 +37,7 @@ public class ServerManager : MonoBehaviour
     }
 
     // Check if there is any data to be read from the server.
-    void Update()
+    void FixedUpdate()
     {
         if (isConnected && loggedIn && s.DataAvailable)
         {
@@ -82,6 +83,7 @@ public class ServerManager : MonoBehaviour
 
     public bool Register(string username, string password)
     {
+        if(username==""||password=="") return false;
         userID = username;
         ClientAuthentication c = new ClientAuthentication(username,password,false,true);
         return Authenticate(c);
@@ -89,6 +91,7 @@ public class ServerManager : MonoBehaviour
 
     public bool LogIn(string username, string password)
     {
+        if(username==""||password=="") return false;
         userID = username;
         ClientAuthentication c = new ClientAuthentication(username,password,false,false);
         return Authenticate(c);
@@ -96,7 +99,8 @@ public class ServerManager : MonoBehaviour
 
     public bool PlayGuest()
     {
-        userID = "Guest";
+        userID = "";
+        isGuest = true;
         ClientAuthentication c = new ClientAuthentication("","",true,false);
         return Authenticate(c);
     }
@@ -106,7 +110,7 @@ public class ServerManager : MonoBehaviour
         sw.WriteLine(JsonUtility.ToJson(c));
         // Receive from Server
         ServerAuthentication sa = JsonUtility.FromJson<ServerAuthentication>(sr.ReadLine());
-        Debug.Log("made it past read line");
+        Debug.Log("packet received");
         // Handle
         if(sa.isValid){
             loggedIn = true;
@@ -125,15 +129,18 @@ public class ServerManager : MonoBehaviour
         if(g.usernames==null) return;
         playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer(g.usernames,g.startingPlayerHealth,g.startingBossHealth,g.startingWord,g.startingCostumeID);
         //playerPool.GetComponent<PlayerPoolManager>().InstantiatePlayer();
+        UIManager.ins.b_costume.interactable = (!isGuest);
         SceneManager.EnterGame();
-        for(int i = 0; i < g.usernames.Length; i++)
-        {
-            if(g.usernames[i]==userID)
-            {
-                clientIndex = i;
-                GameManager.setWord(g.startingWord[i]);
-            }
-        }
+        // for(int i = 0; i < g.usernames.Length; i++)
+        // {
+        //     if(g.usernames[i]==userID)
+        //     {
+        //         clientIndex = i;
+        //         GameManager.setWord(g.startingWord[i]);
+        //     }
+        // }
+        clientIndex = g.playerID;
+        GameManager.setWord(g.startingWord[clientIndex]);
         inGameplay = true;
     }
 

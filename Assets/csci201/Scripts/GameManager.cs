@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
         t_score.text = "0";
         t_target.text = "";
         t_inp.text = "";
+        wordCount = 0;
     }
 
     void Awake()
@@ -45,6 +46,7 @@ public class GameManager : MonoBehaviour
         t_score.text = "0";
         t_target.text = "";
         t_inp.text = "";
+        wordCount = 0;
     }
 
     // Update is called once per frame

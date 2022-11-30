@@ -38,6 +38,7 @@ public class ServerGameStart
     public string[] startingWord;
     public int[] startingCostumeID;
     public int bossCostumeID;
+    public int playerID;
 
     public ServerGameStart(string[] u, int sph, int sbh, string[] sw, int[] scid, int bcid)
     {
