@@ -3,24 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using UnityEngine.UIElements;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
-
     int playerHealth;
     int playerID;
     int playerDamage;
     int playerNumWords;
-    public Animator animation;
-    //public Animation animation;
 
-    PlayerInfo playerInfo;
-    int playerHP;
+    public TMP_Text t_username;
 
-    GameObject enemy;
+    string curWord;
+
+    public PlayerInfo playerInfo;
+    public int playerHP;
+
+    [SerializeField]GameObject playerHat;
+
+    Enemy enemy;
+    Animator animator;
+    AnimatorStateInfo animatorInfo;
     [SerializeField]HealthComponent healthBar;
+    string jsonString;
 
-    enum State{
+    public enum State{
         Idle,
         Attack,
         Dead
@@ -29,20 +37,50 @@ public class Player : MonoBehaviour
     State mCurState = State.Idle;
     //UnUsed variable for later use, update when have attack animation
     bool isInAttackAnimation = false;
-    
-    string filePath = "D:/cs201-final-project-frontend/Assets/csci201/Scripts";
+
+    public bool ComparePlayer(int playerID)
+    {
+        return this.GetComponent<PlayerInfo>().playerID == playerID;
+    }
+
+    public void SetCurState(State state)
+    {
+        mCurState = state;
+    }
+
+    public State GetCurState()
+    {
+        return mCurState;
+    }
+
+    public void SetCurWord(string word)
+    {
+        curWord = word;
+    }
+
+    public string GetCurWord()
+    {
+        return curWord;
+    }
+
+
+
     void Start()
     {
-        playerInfo = PlayerInfo.CreateFromJSON(filePath,"sampleJson.json");
+        // jsonString = Resources.Load<TextAsset>("sampleJson").text;
+        playerInfo = new PlayerInfo("",0,60,false,-1);
+        animator = GetComponent<Animator>();
+        animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
         //animation = gameObject.GetComponent<Animation>();
         /*intialize enemy Uncomment this after enemy is implemented*/
-        //enemy = GameObject.FindGameObjectWithTag("Enemy");
+        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
+        
     }
 
     void Update()
     {
-        playerInfo = PlayerInfo.CreateFromJSON(filePath,"sampleJson.json");
-        UpdatePlayerHealth(playerInfo.health);
+        // playerInfo = PlayerInfo.CreateFromJSON(jsonString);
+        // UpdatePlayerHealth(playerInfo.health);
         UpdatePlayerState();
         UpdatePlayerAnimation();
     }
@@ -73,21 +111,49 @@ public class Player : MonoBehaviour
     }
 
     void UpdateIdle(){
-        animation.Play("idle");
+        //animation.Play("idle");
+        animator.Play("playerIdle");
     }
     void UpdateAttack(){
-
+        //play player attack animation (update isInAttackAnimation bool)
+        animator.Play("playerAttack");
+        animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsTag("Attack"))
+        {
+            mCurState=State.Idle;
+            playerInfo.isAttacking = false;
+            enemy.takingDamage=true;
+        }
+        
     }
 
     void UpdateDeath(){
-
+        animator.Play("playerDeath");
+        animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsTag("Death"))
+        {
+            gameObject.SetActive(false);
+        }
     }
 
-    void UpdatePlayerHealth(int curHealth){
+    public void UpdatePlayerHealth(int curHealth){
         playerHP = curHealth;
-        healthBar.SetHealth(curHealth/100);
+        healthBar.SetHealth((float)curHealth/(float)playerInfo.health);
     }
 
+    public void UpdateCostumeSprite()
+    {
+        //Update costume sprite
+        playerHat.GetComponent<SpriteRenderer>().sprite = ServerManager.ins.playerPool.GetComponent<PlayerPoolManager>().costumes[playerInfo.ownedCustomes];
+    }
+
+    public void NextCostume()
+    {
+        playerInfo.ownedCustomes = ((playerInfo.ownedCustomes+1) % 8);
+        UpdateCostumeSprite();
+        ServerManager.ins.ChangeCostume(playerInfo.ownedCustomes);
+        Debug.Log("Next Costume called");
+    }
 
 }
 
@@ -100,6 +166,7 @@ public class PlayerInfo{
     public int health;
     [HideInInspector]
     public bool isAttacking;
+    public int ownedCustomes;
 
     public static PlayerInfo CreateFromJSON(string fileFolder, string fileName)
     {
@@ -119,6 +186,15 @@ public class PlayerInfo{
 
     public static PlayerInfo CreateFromJSON(string jsonString){
         return JsonUtility.FromJson<PlayerInfo>(jsonString);
+    }
+
+    public PlayerInfo (string n, int id, int hp, bool attack, int costume)
+    {
+        name = n;
+        playerID = id;
+        health = hp;
+        isAttacking = attack;
+        ownedCustomes = costume;
     }
 
 }

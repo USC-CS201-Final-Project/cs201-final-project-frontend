@@ -19,7 +19,7 @@ public class HealthComponent : MonoBehaviour
         
     }
 
-    public void SetHealth(int health){
+    public void SetHealth(float health){
         slider.value = health;
     }
 }

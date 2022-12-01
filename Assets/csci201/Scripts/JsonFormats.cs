@@ -38,6 +38,7 @@ public class ServerGameStart
     public string[] startingWord;
     public int[] startingCostumeID;
     public int bossCostumeID;
+    public int playerID;
 
     public ServerGameStart(string[] u, int sph, int sbh, string[] sw, int[] scid, int bcid)
     {
@@ -76,11 +77,13 @@ public class ClientGameplay
 {
     public bool completedWord;
     public int costumeID;
-
+    public int packetID;
     public ClientGameplay(bool c, int cid)
     {
         completedWord = c;
         costumeID = cid;
+        if(c) packetID = 6;
+        else packetID = 5;
     }
 }
 
@@ -88,7 +91,6 @@ public class ClientGameplay
 public class ServerGameOver
 {
     public int wordsPerMinute;
-
     public ServerGameOver(int wpm)
     {
         wordsPerMinute = wpm;
@@ -99,9 +101,10 @@ public class ServerGameOver
 public class ClientPlayAgain
 {
     public bool playAgain;
-
-    public ClientPlayAgain(bool p)
+    public int packetID;
+    public ClientPlayAgain(bool p,int PID=4)
     {
         playAgain = p;
+        packetID = PID;
     }
 }

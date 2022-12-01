@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class SceneManager : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class SceneManager : MonoBehaviour
     public GameObject login;
     public GameObject gameOver;
     public GameObject wait;
+
+    public GameObject gameManager;
+
+    public TMP_Text t_WPM;
+    public TMP_Text t_gameOver;
 
 
     // Start is called before the first frame update
@@ -28,7 +34,7 @@ public class SceneManager : MonoBehaviour
     public static void EnterGame()
     {
         ins.wait.SetActive(false);
-        GameManager.ins.gameObject.SetActive(true);
+        ins.gameManager.SetActive(true);
         ins.game.SetActive(true);
     }
 
@@ -38,16 +44,20 @@ public class SceneManager : MonoBehaviour
         ins.login.SetActive(true);
     }
 
-    public static void EnterGameOver()
+    public static void EnterGameOver(int wpm, bool b)
     {
+        if(b) ins.t_gameOver.text = "You defeated the slime!";
+        else ins.t_gameOver.text = "The slime defeated you!";
+        ins.t_WPM.text = "WPM: "+wpm;
         ins.game.SetActive(false);
-        GameManager.ins.gameObject.SetActive(false);
+        ins.gameManager.SetActive(false);
         ins.gameOver.SetActive(true);
     }
 
     public static void EnterWait()
     {
         ins.login.SetActive(false);
+        ins.gameOver.SetActive(false);
         ins.wait.SetActive(true);
     }
 

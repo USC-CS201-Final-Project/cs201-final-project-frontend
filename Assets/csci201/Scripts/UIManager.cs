@@ -21,8 +21,12 @@ public class UIManager : MonoBehaviour
     public Button b_register;
     public Button b_guest;
 
+    public Button b_costume;
+
     public Button b_playAgain;
     public Button b_quit;
+
+    public string pain;
 
     private void Awake() {
         if(ins == null){
@@ -39,7 +43,8 @@ public class UIManager : MonoBehaviour
         b_guest.onClick.AddListener(guest);
         b_playAgain.onClick.AddListener(playAgain);
         b_quit.onClick.AddListener(quit);
-        
+        b_costume.onClick.AddListener(costume);
+        pain = t_username.text;
     }
 
 
@@ -56,33 +61,47 @@ public class UIManager : MonoBehaviour
 
     void login()
     {
-        if(t_username.text==""||t_password.text=="") return;
-        else errorText.SetActive(true);
-        if(ServerManager.ins.LogIn(t_username.text,t_password.text)) SceneManager.EnterWait();
-        else errorText.SetActive(true);
+        Debug.Log("Username = '"+t_username.text+"'. "+string.IsNullOrEmpty(t_username.text));
+        Debug.Log("Password = '"+t_password.text+"'. "+string.IsNullOrEmpty(t_password.text));
+        if(t_username.text==pain||t_password.text==pain) errorText.SetActive(true);
+        else{
+            if(ServerManager.ins.LogIn(t_username.text,t_password.text)) SceneManager.EnterWait();
+            else errorText.SetActive(true);
+        }
     }
 
     void register()
     {
-        if(t_username.text==""||t_password.text=="") return;
-        else errorText.SetActive(true);
-        if(ServerManager.ins.Register(t_username.text,t_password.text)) SceneManager.EnterWait();
-        else errorText.SetActive(true);
+        if(t_username.text==pain||t_password.text==pain) errorText.SetActive(true);
+        else{
+            if(ServerManager.ins.Register(t_username.text,t_password.text)) SceneManager.EnterWait();
+            else errorText.SetActive(true);
+        }
     }
 
     void guest()
     {
        if(ServerManager.ins.PlayGuest()) SceneManager.EnterWait();
+       else errorText.SetActive(true);
     }
 
     void playAgain()
     {
+        ServerManager.ins.PlayAgain(true);
         SceneManager.EnterWait();
     }
 
     void quit() 
     {
+        ServerManager.ins.PlayAgain(false);
         SceneManager.EnterConnect();
         errorText.SetActive(false);
+    }
+
+    void costume()
+    {
+        if(!ServerManager.ins.inGameplay) return;
+        Player[] players = ServerManager.ins.playerPool.GetComponentsInChildren<Player>();
+        players[ServerManager.ins.clientIndex].NextCostume();
     }
 }
