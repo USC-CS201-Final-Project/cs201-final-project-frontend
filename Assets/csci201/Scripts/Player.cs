@@ -118,11 +118,15 @@ public class Player : MonoBehaviour
         //play player attack animation (update isInAttackAnimation bool)
         animator.Play("playerAttack");
         animatorInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if(animatorInfo.normalizedTime > 0.5f && animatorInfo.IsTag("Attack"))
+        {
+            enemy.takingDamage=true;
+            AudioManager.PlayBossHit();
+        }
         if(animatorInfo.normalizedTime > 0.99f && animatorInfo.IsTag("Attack"))
         {
             mCurState=State.Idle;
             playerInfo.isAttacking = false;
-            enemy.takingDamage=true;
         }
         
     }

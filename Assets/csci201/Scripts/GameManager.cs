@@ -91,6 +91,7 @@ public class GameManager : MonoBehaviour
     public void completedWord()
     {
         ServerManager.ins.CompleteWord();
+        AudioManager.PlayPlayerTyped();
         wordCount++;
         t_score.text = ""+wordCount;        
         // temp word generation handled within gamemanager, replace with call to servermanager

@@ -5,6 +5,10 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager ins;
+    public AudioSource source;
+    public AudioClip bossHit;
+    public AudioClip playerHit;
+    public AudioClip playerTyped;
     // Start is called before the first frame update
     void Awake()
     {
@@ -22,4 +26,21 @@ public class AudioManager : MonoBehaviour
     {
         
     }
+
+    public static void PlayPlayerHit()
+    {
+        ins.source.PlayOneShot(ins.playerHit);
+    }
+
+    public static void PlayBossHit()
+    {
+        ins.source.PlayOneShot(ins.bossHit);
+    }
+
+    public static void PlayPlayerTyped()
+    {
+        ins.source.PlayOneShot(ins.playerTyped);
+    }
+
+
 }

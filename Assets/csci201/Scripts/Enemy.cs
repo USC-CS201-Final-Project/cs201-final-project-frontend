@@ -100,6 +100,7 @@ public class Enemy : MonoBehaviour
         {
             enemyCurState = State.Idle;
             enemyInfo.isAttacking = false;
+            AudioManager.PlayPlayerHit();
         }
 
     }
